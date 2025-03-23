@@ -1,0 +1,19 @@
+{
+  "name": "task-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "ingex.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/biswajit-halder/task-tracker.git"
+  },
+  "author": "biswajit-halder",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/biswajit-halder/task-tracker/issues"
+  },
+  "homepage": "https://github.com/biswajit-halder/task-tracker#readme"
+}
