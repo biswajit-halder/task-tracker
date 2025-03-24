@@ -48,7 +48,7 @@ function addTask(taskDesc) {
 }
 
 // Function to update a task
-function UpdateTask(taskId, taskDesc) {
+function UpdateTask(taskId, taskDesc = null, taskStatus = null) {
     const tasks = readTask();
     const task = tasks.find(task => task.id === parseInt(taskId));
 
@@ -56,10 +56,20 @@ function UpdateTask(taskId, taskDesc) {
         console.log(`Task with ID: ${taskId} doesn't exists!`);
         process.exit();
     }
-    task.description = taskDesc;
-    task.updatedAt = getFormattedDate();
-    writeTask(tasks);
-    console.log(`Task ID ${taskId} updated successfully!`);
+    if (taskDesc) {
+        task.description = taskDesc;
+        task.updatedAt = getFormattedDate();
+        writeTask(tasks);
+        console.log(`Task ID ${taskId} updated successfully!`);
+    }
+    
+    if (taskStatus) {
+        task.status = taskStatus;
+        task.updatedAt = getFormattedDate();
+        writeTask(tasks);
+        console.log(`Task ID ${taskId} status updated successfully!`);
+    }
+    
 }
 
 // Function to delete a task
@@ -74,6 +84,26 @@ function deleteTask(taskId) {
 
     writeTask(neweTask);
     console.log(`Task ID ${taskId} deleted successfully!`);
+}
+
+
+function listTasks(status) {
+    const tasks = readTask();
+    let filteredTasks = tasks;
+
+    if (status) {
+        filteredTasks = tasks.filter(task => task.status === status);
+    }
+
+    if (filteredTasks.length === 0) {
+        console.log(`No tasks found${status ? " of status " + status : ''}!`);
+        process.exit();
+    }
+
+    console.log(`Listing all tasks${status ? " of status " + status : ''}:`);
+    tasks.forEach(task => {
+        console.log(`${task.id} ${task.description} ${task.createdAt} ${task.updatedAt} `);
+    })
 }
 
 function getFormattedDate() {
@@ -91,6 +121,8 @@ if (!args[0]) {
 }
 switch(args[0].toLowerCase()) {
     case "list":
+        const status = args[1]; // "done", "to-do", "in-progress" (optional)
+        listTasks(status);
         break;
     case "add":
         const taskDesc = args.slice(1).join(" ");
@@ -122,6 +154,22 @@ switch(args[0].toLowerCase()) {
         }
 
         deleteTask(taskIdToDelete);
+        break;
+    case "mark-done":
+    case "mark-in-progress":
+        const taskIdToDone = args[1];
+        if (parseInt(taskIdToDone) === NaN || taskIdToDone === undefined) {
+            console.log(`Please provide a valid task id!`);
+            process.exit();
+        }
+
+        const taskStatus = args[0].toLowerCase().replace("mark-", "");
+
+        if(!taskStatus || !(taskStatus === "done" || taskStatus === "in-progress")) {
+            console.log(`Please provide a valid task status!`);
+            process.exit();
+        }
+        UpdateTask(taskIdToDone, null, taskStatus);
         break;
     case "default":
         console.log(`Please provide a command!`);
