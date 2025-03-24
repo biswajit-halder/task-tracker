@@ -47,6 +47,35 @@ function addTask(taskDesc) {
     console.log(`Task added successfully! (ID: ${newTask.id})`);
 }
 
+// Function to update a task
+function UpdateTask(taskId, taskDesc) {
+    const tasks = readTask();
+    const task = tasks.find(task => task.id === parseInt(taskId));
+
+    if (!task) {
+        console.log(`Task with ID: ${taskId} doesn't exists!`);
+        process.exit();
+    }
+    task.description = taskDesc;
+    task.updatedAt = getFormattedDate();
+    writeTask(tasks);
+    console.log(`Task ID ${taskId} updated successfully!`);
+}
+
+// Function to delete a task
+function deleteTask(taskId) {
+    const tasks = readTask();
+    const neweTask = tasks.filter(task => task.id !== parseInt(taskId));
+
+    if (neweTask.length === tasks.length) {
+        console.log(`Task with ID: ${taskId} doesn't exists!`);
+        process.exit();
+    }
+
+    writeTask(neweTask);
+    console.log(`Task ID ${taskId} deleted successfully!`);
+}
+
 function getFormattedDate() {
     const now = new Date();
     return now.toISOString().slice(0, 19).replace("T", " ");
@@ -72,10 +101,29 @@ switch(args[0].toLowerCase()) {
         }
         break;
     case "update":
+        const taskIdToUpdate = args[1];
+        if (parseInt(taskIdToUpdate) === NaN || taskIdToUpdate === undefined) {
+            console.log(`Please provide a valid task id!`);
+            process.exit();
+        }
+
+        const updateTaskDesc = args.slice(2).join(" ");
+        if (!updateTaskDesc) {
+            console.log(`Please provide a task description!`);
+        } else {
+            UpdateTask(taskIdToUpdate, updateTaskDesc);
+        }
         break;
     case "delete":
+        const taskIdToDelete = args[1];
+        if (parseInt(taskIdToDelete) === NaN || taskIdToDelete === undefined) {
+            console.log(`Please provide a valid task id!`);
+            process.exit();
+        }
+
+        deleteTask(taskIdToDelete);
         break;
     case "default":
-        console.log(`Please provide a task!`);
+        console.log(`Please provide a command!`);
         break;
 }
